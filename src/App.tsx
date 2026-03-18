@@ -1,0 +1,169 @@
+﻿import { useEffect, useState } from 'react';
+import { AuthScreen } from './components/AuthScreen';
+import { Board } from './components/Board';
+import { BoardSelector } from './components/BoardSelector';
+import { ConfirmDialog } from './components/ConfirmDialog';
+import { FilterBar } from './components/FilterBar';
+import { Header } from './components/Header';
+import { SupabaseSetup } from './components/SupabaseSetup';
+import { TaskModal } from './components/TaskModal';
+import { BOARD_COLUMNS } from './data/columns';
+import { useAuth } from './hooks/useAuth';
+import { useKanbanBoard } from './hooks/useKanbanBoard';
+import { getUniqueTags } from './utils/task';
+
+const App = () => {
+  const auth = useAuth();
+  const {
+    boards,
+    currentBoard,
+    tasks,
+    tasksByStatus,
+    filters,
+    setFilters,
+    resetFilters,
+    theme,
+    setTheme,
+    isModalOpen,
+    isConfirmOpen,
+    taskBeingEdited,
+    boardToDelete,
+    isLoading,
+    isSaving,
+    isSupabaseConfigured,
+    error,
+    setError,
+    openCreateModal,
+    openEditModal,
+    closeModal,
+    saveTask,
+    deleteTask,
+    moveTask,
+    requestClearAllTasks,
+    clearAllTasks,
+    createBoard,
+    openBoard,
+    closeBoard,
+    requestDeleteBoard,
+    deleteBoard,
+    closeConfirm,
+    initialFormValues,
+  } = useKanbanBoard(auth.user?.id ?? null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
+  if (!isSupabaseConfigured || !auth.isAuthConfigured) {
+    return <SupabaseSetup />;
+  }
+
+  if (auth.isLoading && !auth.user) {
+    return null;
+  }
+
+  if (!auth.user) {
+    return (
+      <AuthScreen
+        isLoading={auth.isLoading}
+        error={auth.error}
+        info={auth.info}
+        onSignIn={auth.signIn}
+        onSignUp={auth.signUp}
+      />
+    );
+  }
+
+  if (!currentBoard) {
+    return (
+      <>
+        <BoardSelector
+          boards={boards}
+          userEmail={auth.user.email ?? 'Без email'}
+          isLoading={isLoading}
+          isSaving={isSaving || auth.isLoading}
+          error={error}
+          onOpenBoard={openBoard}
+          onCreateBoard={createBoard}
+          onDeleteBoard={requestDeleteBoard}
+          onSignOut={auth.signOut}
+        />
+        <ConfirmDialog
+          open={isConfirmOpen}
+          title="Удалить доску?"
+          description={boardToDelete ? `Доска «${boardToDelete.name}» будет удалена без возможности восстановления.` : ''}
+          confirmLabel="Удалить"
+          onCancel={closeConfirm}
+          onConfirm={deleteBoard}
+        />
+      </>
+    );
+  }
+
+  return (
+    <div className="min-h-screen px-4 py-4 md:px-6 xl:px-8">
+      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4">
+        {error && (
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-left text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200"
+          >
+            {error}
+          </button>
+        )}
+
+        <Header
+          boardName={currentBoard.name}
+          totalTasks={tasks.length}
+          userEmail={auth.user.email ?? 'Без email'}
+          theme={theme}
+          onBack={closeBoard}
+          onSignOut={auth.signOut}
+          onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          onOpenFilters={() => setIsFilterOpen(true)}
+          onCreateTask={() => openCreateModal()}
+          onClearAll={requestClearAllTasks}
+        />
+
+        <Board
+          columns={BOARD_COLUMNS}
+          tasksByStatus={tasksByStatus}
+          onCreateTask={openCreateModal}
+          onEditTask={openEditModal}
+          onDeleteTask={deleteTask}
+          onMoveTask={moveTask}
+        />
+      </div>
+
+      <FilterBar
+        open={isFilterOpen}
+        filters={filters}
+        tags={getUniqueTags(tasks)}
+        onChange={setFilters}
+        onReset={resetFilters}
+        onClose={() => setIsFilterOpen(false)}
+      />
+
+      <TaskModal
+        open={isModalOpen}
+        initialValues={initialFormValues}
+        mode={taskBeingEdited?.id ? 'edit' : 'create'}
+        onClose={closeModal}
+        onSubmit={saveTask}
+      />
+
+      <ConfirmDialog
+        open={isConfirmOpen && !boardToDelete}
+        title="Очистить задачи?"
+        description="Все задачи на этой доске будут удалены."
+        confirmLabel="Очистить"
+        onCancel={closeConfirm}
+        onConfirm={clearAllTasks}
+      />
+    </div>
+  );
+};
+
+export default App;
