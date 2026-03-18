@@ -119,7 +119,7 @@ export const Board = ({
         ))}
       </div>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activeTask ? <TaskCard task={activeTask} onEdit={() => undefined} onDelete={() => undefined} dragOverlay /> : null}
       </DragOverlay>
     </DndContext>
