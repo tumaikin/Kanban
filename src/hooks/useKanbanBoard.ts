@@ -295,8 +295,8 @@ export const useKanbanBoard = (userId: string | null) => {
     }
 
     try {
-      await replaceBoardTasks(currentBoard.id, nextTasks);
       replaceCurrentBoardTasksLocal(() => nextTasks);
+      await replaceBoardTasks(currentBoard.id, nextTasks);
     } catch (moveError) {
       setError(getErrorMessage(moveError, 'Не удалось переместить задачу.'));
       await refreshBoards();
