@@ -19,9 +19,9 @@ const PRIORITY_OPTIONS: Array<{ label: string; value: FilterState['priority'] }>
 
 const STATUS_OPTIONS: Array<{ label: string; value: FilterState['status'] }> = [
   { label: 'Все статусы', value: 'all' },
-  { label: 'Бэклог', value: 'backlog' },
+  { label: 'Идеи', value: 'backlog' },
+  { label: 'План', value: 'review' },
   { label: 'В работе', value: 'in-progress' },
-  { label: 'На проверке', value: 'review' },
   { label: 'Готово', value: 'done' },
 ];
 

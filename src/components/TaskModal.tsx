@@ -16,9 +16,9 @@ interface TaskModalProps {
 type ValidationErrors = Partial<Record<keyof TaskFormValues, string>>;
 
 const STATUS_OPTIONS = [
-  { label: 'Бэклог', value: 'backlog' },
+  { label: 'Идеи', value: 'backlog' },
+  { label: 'План', value: 'review' },
   { label: 'В работе', value: 'in-progress' },
-  { label: 'На проверке', value: 'review' },
   { label: 'Готово', value: 'done' },
 ] as const;
 
