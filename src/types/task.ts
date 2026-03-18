@@ -1,6 +1,6 @@
 ﻿export type TaskStatus = 'backlog' | 'in-progress' | 'review' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high';
-export type SortOption = 'createdAt' | 'dueDate' | 'priority';
+export type SortOption = 'manual' | 'createdAt' | 'dueDate' | 'priority';
 
 export interface Task {
   id: string;

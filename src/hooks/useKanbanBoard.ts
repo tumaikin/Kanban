@@ -36,6 +36,17 @@ export const useKanbanBoard = (userId: string | null) => {
   );
 
   const tasks = currentBoard?.tasks ?? [];
+  const allTasksByStatus = useMemo(
+    () =>
+      tasks.reduce<Record<TaskStatus, Task[]>>(
+        (accumulator, task) => {
+          accumulator[task.status].push(task);
+          return accumulator;
+        },
+        { backlog: [], 'in-progress': [], review: [], done: [] },
+      ),
+    [tasks],
+  );
   const visibleTasks = useMemo(() => filterAndSortTasks(tasks, filters), [tasks, filters]);
 
   const tasksByStatus = useMemo(
@@ -388,6 +399,7 @@ export const useKanbanBoard = (userId: string | null) => {
     boards,
     currentBoard,
     tasks,
+    allTasksByStatus,
     tasksByStatus,
     filters,
     setFilters,

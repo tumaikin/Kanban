@@ -18,6 +18,7 @@ const App = () => {
     boards,
     currentBoard,
     tasks,
+    allTasksByStatus,
     tasksByStatus,
     filters,
     setFilters,
@@ -50,6 +51,12 @@ const App = () => {
     initialFormValues,
   } = useKanbanBoard(auth.user?.id ?? null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const canReorderTasks =
+    filters.sortBy === 'manual' &&
+    !filters.search.trim() &&
+    filters.priority === 'all' &&
+    filters.status === 'all' &&
+    filters.tag === 'all';
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -127,9 +134,17 @@ const App = () => {
           onClearAll={requestClearAllTasks}
         />
 
+        {!canReorderTasks && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100">
+            Для ручной перестановки задач отключи фильтры и выбери сортировку «Ручной порядок».
+          </div>
+        )}
+
         <Board
           columns={BOARD_COLUMNS}
+          allTasksByStatus={allTasksByStatus}
           tasksByStatus={tasksByStatus}
+          canReorderTasks={canReorderTasks}
           onCreateTask={openCreateModal}
           onEditTask={openEditModal}
           onDeleteTask={deleteTask}
@@ -149,6 +164,7 @@ const App = () => {
       <TaskModal
         open={isModalOpen}
         initialValues={initialFormValues}
+        availableTags={getUniqueTags(tasks)}
         mode={taskBeingEdited?.id ? 'edit' : 'create'}
         onClose={closeModal}
         onSubmit={saveTask}

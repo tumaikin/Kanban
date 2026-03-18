@@ -26,6 +26,7 @@ const STATUS_OPTIONS: Array<{ label: string; value: FilterState['status'] }> = [
 ];
 
 const SORT_OPTIONS: Array<{ label: string; value: FilterState['sortBy'] }> = [
+  { label: 'Ручной порядок', value: 'manual' },
   { label: 'Сначала новые', value: 'createdAt' },
   { label: 'Ближайший дедлайн', value: 'dueDate' },
   { label: 'Высокий приоритет', value: 'priority' },

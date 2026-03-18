@@ -11,7 +11,7 @@ export const DEFAULT_FILTERS: FilterState = {
   priority: 'all',
   status: 'all',
   tag: 'all',
-  sortBy: 'createdAt',
+  sortBy: 'manual',
 };
 
 export const toTaskFormValues = (task?: Task): TaskFormValues => ({
@@ -97,8 +97,7 @@ export const compareTasks = (left: Task, right: Task, sortBy: SortOption) => {
 export const filterAndSortTasks = (tasks: Task[], filters: FilterState) => {
   const query = filters.search.trim().toLowerCase();
 
-  return tasks
-    .filter((task) => {
+  const filteredTasks = tasks.filter((task) => {
       const matchesSearch =
         !query ||
         [task.title, task.description, task.tags.join(' ')]
@@ -111,6 +110,11 @@ export const filterAndSortTasks = (tasks: Task[], filters: FilterState) => {
       const matchesTag = filters.tag === 'all' || task.tags.includes(filters.tag);
 
       return matchesSearch && matchesPriority && matchesStatus && matchesTag;
-    })
-    .sort((left, right) => compareTasks(left, right, filters.sortBy));
+    });
+
+  if (filters.sortBy === 'manual') {
+    return filteredTasks;
+  }
+
+  return filteredTasks.sort((left, right) => compareTasks(left, right, filters.sortBy));
 };

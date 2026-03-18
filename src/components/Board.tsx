@@ -16,7 +16,9 @@ import { TaskCard } from './TaskCard';
 
 interface BoardProps {
   columns: ColumnDefinition[];
+  allTasksByStatus: Record<TaskStatus, Task[]>;
   tasksByStatus: Record<TaskStatus, Task[]>;
+  canReorderTasks: boolean;
   onCreateTask: (status: TaskStatus) => void;
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
@@ -41,7 +43,9 @@ const findTaskLocation = (tasksByStatus: Record<TaskStatus, Task[]>, taskId: str
 
 export const Board = ({
   columns,
+  allTasksByStatus,
   tasksByStatus,
+  canReorderTasks,
   onCreateTask,
   onEditTask,
   onDeleteTask,
@@ -79,6 +83,13 @@ export const Board = ({
         return;
       }
 
+      if (!canReorderTasks) {
+        if (source.status !== destination.status) {
+          onMoveTask(String(active.id), destination.status, allTasksByStatus[destination.status].length);
+        }
+        return;
+      }
+
       const destinationIndex = source.status === destination.status && source.index < destination.index
         ? destination.index - 1
         : destination.index;
@@ -88,7 +99,8 @@ export const Board = ({
     }
 
     if (overColumn) {
-      onMoveTask(String(active.id), overColumn, tasksByStatus[overColumn].length);
+      const destinationIndex = canReorderTasks ? tasksByStatus[overColumn].length : allTasksByStatus[overColumn].length;
+      onMoveTask(String(active.id), overColumn, destinationIndex);
     }
   };
 

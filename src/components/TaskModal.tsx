@@ -2,10 +2,12 @@
 import { X } from 'lucide-react';
 import clsx from 'clsx';
 import type { TaskFormValues } from '../types/task';
+import { parseTags } from '../utils/task';
 
 interface TaskModalProps {
   open: boolean;
   initialValues: TaskFormValues;
+  availableTags: string[];
   mode: 'create' | 'edit';
   onClose: () => void;
   onSubmit: (values: TaskFormValues) => void;
@@ -28,7 +30,7 @@ const PRIORITY_OPTIONS = [
 
 const emptyErrors: ValidationErrors = {};
 
-export const TaskModal = ({ open, initialValues, mode, onClose, onSubmit }: TaskModalProps) => {
+export const TaskModal = ({ open, initialValues, availableTags, mode, onClose, onSubmit }: TaskModalProps) => {
   const [values, setValues] = useState<TaskFormValues>(initialValues);
   const [errors, setErrors] = useState<ValidationErrors>(emptyErrors);
 
@@ -87,6 +89,31 @@ export const TaskModal = ({ open, initialValues, mode, onClose, onSubmit }: Task
         ? 'border-rose-300 dark:border-rose-500/40'
         : 'border-slate-200 dark:border-slate-700',
     );
+
+  const tagParts = values.tags.split(',');
+  const currentTagDraft = (tagParts[tagParts.length - 1] ?? '').trim().toLowerCase();
+  const selectedTags = new Set(parseTags(values.tags).map((tag) => tag.toLowerCase()));
+  const suggestedTags = availableTags.filter((tag) => {
+    const normalizedTag = tag.toLowerCase();
+
+    if (selectedTags.has(normalizedTag)) {
+      return false;
+    }
+
+    return !currentTagDraft || normalizedTag.includes(currentTagDraft);
+  });
+
+  const appendTag = (tag: string) => {
+    const nextTags = parseTags(values.tags);
+    if (nextTags.some((existingTag) => existingTag.toLowerCase() === tag.toLowerCase())) {
+      return;
+    }
+
+    setValues({
+      ...values,
+      tags: [...nextTags, tag].join(', '),
+    });
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm">
@@ -195,6 +222,20 @@ export const TaskModal = ({ open, initialValues, mode, onClose, onSubmit }: Task
                 className={inputClassName('tags')}
                 placeholder="фронтенд, ux, релиз"
               />
+              {suggestedTags.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {suggestedTags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => appendTag(tag)}
+                      className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700 transition hover:border-sky-300 hover:bg-sky-100 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200 dark:hover:border-sky-500/40 dark:hover:bg-sky-500/20"
+                    >
+                      #{tag}
+                    </button>
+                  ))}
+                </div>
+              )}
               <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Разделяй теги запятыми.</p>
             </div>
           </div>
