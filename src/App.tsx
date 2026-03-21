@@ -109,8 +109,8 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen px-4 py-4 md:px-6 xl:px-8">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4">
+    <div className="min-h-screen px-3 py-3 md:px-4 md:py-4 xl:px-6">
+      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-3">
         {error && (
           <button
             type="button"
@@ -135,7 +135,7 @@ const App = () => {
         />
 
         {!canReorderTasks && (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100">
             Для ручной перестановки задач отключи фильтры и выбери сортировку «Ручной порядок».
           </div>
         )}

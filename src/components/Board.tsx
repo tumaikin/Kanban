@@ -106,7 +106,7 @@ export const Board = ({
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="grid gap-4 xl:grid-cols-4">
+      <div className="grid gap-3 xl:grid-cols-4">
         {columns.map((column) => (
           <Column
             key={column.id}
