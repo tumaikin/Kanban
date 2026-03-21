@@ -38,8 +38,8 @@ export const AuthScreen = ({ isLoading, error, info, onSignIn, onSignUp }: AuthS
   };
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-8 md:px-6">
-      <div className="rounded-[28px] border border-white/60 bg-white/90 p-6 shadow-panel backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85 md:p-8">
+    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-6 md:px-6 md:py-8">
+      <div className="rounded-[28px] border border-white/60 bg-white/90 p-5 shadow-panel backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85 md:p-8">
         <div className="mb-6 flex items-center gap-3">
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white dark:bg-sky-500 dark:text-slate-950">
             <LockKeyhole size={20} />
@@ -88,7 +88,7 @@ export const AuthScreen = ({ isLoading, error, info, onSignIn, onSignUp }: AuthS
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-500/20"
+                className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-base text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-500/20 sm:text-sm"
                 placeholder="you@example.com"
                 autoComplete="email"
               />
@@ -101,7 +101,7 @@ export const AuthScreen = ({ isLoading, error, info, onSignIn, onSignUp }: AuthS
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-500/20"
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-500/20 sm:text-sm"
               placeholder="Минимум 6 символов"
               autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
             />

@@ -40,9 +40,9 @@ export const BoardSelector = ({ boards, userEmail, isLoading, isSaving, error, o
   };
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-4 py-8 md:px-6">
-      <div className="rounded-[28px] border border-white/60 bg-white/85 p-5 shadow-panel backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/80 md:p-6">
-        <div className="mb-6 flex items-center justify-between gap-3">
+    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-4 py-6 md:px-6 md:py-8">
+      <div className="rounded-[28px] border border-white/60 bg-white/85 p-4 shadow-panel backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/80 md:p-6">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white dark:bg-sky-500 dark:text-slate-950">
               <FolderKanban size={20} />
@@ -56,7 +56,7 @@ export const BoardSelector = ({ boards, userEmail, isLoading, isSaving, error, o
           <button
             type="button"
             onClick={onSignOut}
-            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-500/40 dark:hover:text-sky-300"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-500/40 dark:hover:text-sky-300 sm:w-auto"
           >
             <LogOut size={18} />
             Выйти
@@ -79,7 +79,7 @@ export const BoardSelector = ({ boards, userEmail, isLoading, isSaving, error, o
               }
             }}
             placeholder="Новая доска"
-            className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-500/20"
+            className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100 dark:focus:border-sky-500 dark:focus:ring-sky-500/20 sm:text-sm"
           />
           <button
             type="button"
@@ -108,7 +108,7 @@ export const BoardSelector = ({ boards, userEmail, isLoading, isSaving, error, o
                 key={board.id}
                 type="button"
                 onClick={() => onOpenBoard(board.id)}
-                className="group rounded-[24px] border border-slate-200/80 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-900/95 dark:hover:border-sky-500/30"
+                className="group rounded-[24px] border border-slate-200/80 bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-900/95 dark:hover:border-sky-500/30 sm:p-5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>

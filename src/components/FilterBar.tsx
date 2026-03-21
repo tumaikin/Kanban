@@ -41,8 +41,8 @@ export const FilterBar = ({ open, filters, tags, onChange, onReset, onClose }: F
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm">
-      <section className="w-full max-w-3xl rounded-[28px] border border-white/60 bg-white/95 p-5 shadow-2xl dark:border-slate-800/80 dark:bg-slate-900/95">
+    <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/50 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+      <section className="w-full max-h-[92vh] overflow-y-auto rounded-t-[28px] border border-white/60 bg-white/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl dark:border-slate-800/80 dark:bg-slate-900/95 sm:max-w-3xl sm:rounded-[28px] sm:p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="rounded-2xl bg-slate-100 p-2 text-slate-500 dark:bg-slate-800 dark:text-slate-300">
@@ -122,18 +122,18 @@ export const FilterBar = ({ open, filters, tags, onChange, onReset, onClose }: F
           </select>
         </div>
 
-        <div className="mt-5 flex justify-end gap-2">
+        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onReset}
-            className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-sky-500/30 dark:hover:text-sky-300"
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-sky-500/30 dark:hover:text-sky-300 sm:w-auto"
           >
             Сбросить
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400"
+            className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400 sm:w-auto"
           >
             Готово
           </button>

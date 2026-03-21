@@ -106,16 +106,17 @@ export const Board = ({
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="grid gap-3 xl:grid-cols-4">
+      <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 md:grid md:overflow-visible md:pb-0 xl:grid-cols-4">
         {columns.map((column) => (
-          <Column
-            key={column.id}
-            column={column}
-            tasks={tasksByStatus[column.id]}
-            onCreateTask={onCreateTask}
-            onEditTask={onEditTask}
-            onDeleteTask={onDeleteTask}
-          />
+          <div key={column.id} className="w-[86vw] min-w-[280px] shrink-0 snap-center md:w-auto md:min-w-0 md:shrink">
+            <Column
+              column={column}
+              tasks={tasksByStatus[column.id]}
+              onCreateTask={onCreateTask}
+              onEditTask={onEditTask}
+              onDeleteTask={onDeleteTask}
+            />
+          </div>
         ))}
       </div>
 

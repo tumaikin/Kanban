@@ -15,6 +15,8 @@ body {
   background-image:
     radial-gradient(circle at top, rgba(56, 189, 248, 0.12), transparent 30%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(226, 232, 240, 0.5));
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .dark body {
@@ -25,6 +27,10 @@ body {
 
 #root {
   @apply min-h-screen;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 * {
