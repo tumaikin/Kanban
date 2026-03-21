@@ -1,7 +1,8 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthScreen } from './components/AuthScreen';
 import { Board } from './components/Board';
 import { BoardSelector } from './components/BoardSelector';
+import { BoardSettingsModal } from './components/BoardSettingsModal';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { FilterBar } from './components/FilterBar';
 import { Header } from './components/Header';
@@ -51,6 +52,7 @@ const App = () => {
     initialFormValues,
   } = useKanbanBoard(auth.user?.id ?? null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isBoardSettingsOpen, setIsBoardSettingsOpen] = useState(false);
   const canReorderTasks =
     filters.sortBy === 'manual' &&
     !filters.search.trim() &&
@@ -131,7 +133,7 @@ const App = () => {
           onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           onOpenFilters={() => setIsFilterOpen(true)}
           onCreateTask={() => openCreateModal()}
-          onClearAll={requestClearAllTasks}
+          onOpenBoardSettings={() => setIsBoardSettingsOpen(true)}
         />
 
         {!canReorderTasks && (
@@ -168,6 +170,16 @@ const App = () => {
         mode={taskBeingEdited?.id ? 'edit' : 'create'}
         onClose={closeModal}
         onSubmit={saveTask}
+      />
+
+      <BoardSettingsModal
+        open={isBoardSettingsOpen}
+        boardName={currentBoard.name}
+        onClose={() => setIsBoardSettingsOpen(false)}
+        onClearAll={() => {
+          setIsBoardSettingsOpen(false);
+          requestClearAllTasks();
+        }}
       />
 
       <ConfirmDialog

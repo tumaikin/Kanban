@@ -1,4 +1,4 @@
-﻿import { ArrowLeft, FolderKanban, LogOut, MoonStar, Plus, Search, SunMedium, Trash2 } from 'lucide-react';
+import { ArrowLeft, FolderKanban, LogOut, MoonStar, Plus, Search, Settings2, SunMedium } from 'lucide-react';
 
 interface HeaderProps {
   boardName: string;
@@ -10,7 +10,7 @@ interface HeaderProps {
   onToggleTheme: () => void;
   onOpenFilters: () => void;
   onCreateTask: () => void;
-  onClearAll: () => void;
+  onOpenBoardSettings: () => void;
 }
 
 export const Header = ({
@@ -23,7 +23,7 @@ export const Header = ({
   onToggleTheme,
   onOpenFilters,
   onCreateTask,
-  onClearAll,
+  onOpenBoardSettings,
 }: HeaderProps) => (
   <header className="rounded-[22px] border border-white/60 bg-white/85 p-3 shadow-panel backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/80">
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -66,11 +66,11 @@ export const Header = ({
         </button>
         <button
           type="button"
-          onClick={onClearAll}
-          className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-sm font-medium text-rose-700 transition hover:bg-rose-100 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200"
+          onClick={onOpenBoardSettings}
+          className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-500/40 dark:hover:text-sky-300"
         >
-          <Trash2 size={16} />
-          Очистить
+          <Settings2 size={16} />
+          Настройки
         </button>
         <button
           type="button"
