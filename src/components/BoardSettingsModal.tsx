@@ -62,8 +62,8 @@ export const BoardSettingsModal = ({ open, boardName, onClose, onClearAll }: Boa
             <div className="flex-1">
               <h3 className="text-base font-semibold text-rose-900 dark:text-rose-100">Очистить все задачи</h3>
               <p className="mt-1 text-sm leading-6 text-rose-700/90 dark:text-rose-200/90">
-                Это действие удалит все задачи на текущей доске. Чтобы случайно не очистить данные, введи слово
-                {' '}<span className="font-semibold">{CLEAR_CONFIRMATION}</span>.
+                Это действие удалит все задачи на текущей доске. Чтобы случайно не очистить данные, введи слово{' '}
+                <span className="font-semibold">{CLEAR_CONFIRMATION}</span>.
               </p>
 
               <div className="mt-4">

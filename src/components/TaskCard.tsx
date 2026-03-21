@@ -40,25 +40,10 @@ const TaskCardBody = ({ task, onEdit, onDelete, className, attributes, listeners
         className,
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <button
-          type="button"
-          onDoubleClick={() => onEdit(task)}
-          className={clsx('flex-1 text-left', listeners && 'cursor-grab active:cursor-grabbing')}
-          {...attributes}
-          {...listeners}
-        >
-          <div className="flex items-center gap-2">
-            <span className={clsx('rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase ring-1', priorityStyles[task.priority])}>
-              {getPriorityLabel(task.priority)}
-            </span>
-          </div>
-          <h3 className="mt-2 text-sm font-semibold text-slate-900 dark:text-white md:text-[15px]">{task.title}</h3>
-          {hasDescription && (
-            <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-300 md:text-sm">{task.description}</p>
-          )}
-        </button>
-
+      <div className="flex items-center justify-between gap-2">
+        <span className={clsx('rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase ring-1', priorityStyles[task.priority])}>
+          {getPriorityLabel(task.priority)}
+        </span>
         <div className="flex gap-1 opacity-100 md:opacity-0 md:transition md:group-hover:opacity-100">
           <button
             type="button"
@@ -78,6 +63,19 @@ const TaskCardBody = ({ task, onEdit, onDelete, className, attributes, listeners
           </button>
         </div>
       </div>
+
+      <button
+        type="button"
+        onDoubleClick={() => onEdit(task)}
+        className={clsx('mt-2 block w-full text-left', listeners && 'cursor-grab active:cursor-grabbing')}
+        {...attributes}
+        {...listeners}
+      >
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-white md:text-[15px]">{task.title}</h3>
+        {hasDescription && (
+          <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-300 md:text-sm">{task.description}</p>
+        )}
+      </button>
 
       {task.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
