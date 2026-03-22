@@ -1,16 +1,25 @@
-import { Settings2, Trash2, X } from 'lucide-react';
+import { MoonStar, Settings2, SunMedium, Trash2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface BoardSettingsModalProps {
   open: boolean;
   boardName: string;
+  theme: 'light' | 'dark';
   onClose: () => void;
+  onToggleTheme: () => void;
   onClearAll: () => void;
 }
 
 const CLEAR_CONFIRMATION = 'ОЧИСТИТЬ';
 
-export const BoardSettingsModal = ({ open, boardName, onClose, onClearAll }: BoardSettingsModalProps) => {
+export const BoardSettingsModal = ({
+  open,
+  boardName,
+  theme,
+  onClose,
+  onToggleTheme,
+  onClearAll,
+}: BoardSettingsModalProps) => {
   const [confirmationValue, setConfirmationValue] = useState('');
 
   useEffect(() => {
@@ -38,9 +47,7 @@ export const BoardSettingsModal = ({ open, boardName, onClose, onClearAll }: Boa
             </span>
             <div>
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Настройки доски</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                Управление доской «{boardName}» и действия, которые влияют на все задачи сразу.
-              </p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Доска «{boardName}».</p>
             </div>
           </div>
 
@@ -54,22 +61,33 @@ export const BoardSettingsModal = ({ open, boardName, onClose, onClearAll }: Boa
           </button>
         </div>
 
-        <div className="mt-6 rounded-[24px] border border-rose-200 bg-rose-50/70 p-4 dark:border-rose-500/20 dark:bg-rose-500/10 sm:p-5">
+        <div className="mt-5 rounded-[24px] border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Тема интерфейса</h3>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Сейчас: {theme === 'dark' ? 'тёмная' : 'светлая'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-500/40 dark:hover:text-sky-300"
+            >
+              {theme === 'dark' ? <SunMedium size={16} /> : <MoonStar size={16} />}
+              Переключить
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-[24px] border border-rose-200 bg-rose-50/70 p-4 dark:border-rose-500/20 dark:bg-rose-500/10">
           <div className="flex items-start gap-3">
             <span className="rounded-2xl bg-rose-100 p-2.5 text-rose-700 dark:bg-rose-500/20 dark:text-rose-200">
               <Trash2 size={18} />
             </span>
             <div className="flex-1">
-              <h3 className="text-base font-semibold text-rose-900 dark:text-rose-100">Очистить все задачи</h3>
-              <p className="mt-1 text-sm leading-6 text-rose-700/90 dark:text-rose-200/90">
-                Это действие удалит все задачи на текущей доске. Чтобы случайно не очистить данные, введи слово{' '}
-                <span className="font-semibold">{CLEAR_CONFIRMATION}</span>.
-              </p>
-
-              <div className="mt-4">
-                <label className="mb-2 block text-sm font-medium text-rose-900 dark:text-rose-100">
-                  Подтверждение очистки
-                </label>
+              <h3 className="text-base font-semibold text-rose-900 dark:text-rose-100">Очистить задачи</h3>
+              <div className="mt-3">
                 <input
                   type="text"
                   value={confirmationValue}
@@ -79,7 +97,7 @@ export const BoardSettingsModal = ({ open, boardName, onClose, onClearAll }: Boa
                 />
               </div>
 
-              <div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <div className="mt-3 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={onClose}
@@ -93,7 +111,7 @@ export const BoardSettingsModal = ({ open, boardName, onClose, onClearAll }: Boa
                   disabled={!canClearBoard}
                   className="w-full rounded-2xl bg-rose-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:bg-rose-300 dark:disabled:bg-rose-900/50 sm:w-auto"
                 >
-                  Очистить все задачи
+                  Очистить
                 </button>
               </div>
             </div>

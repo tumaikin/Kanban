@@ -32,13 +32,20 @@ interface TaskCardBodyProps {
 const TaskCardBody = ({ task, onEdit, onDelete, className, attributes, listeners }: TaskCardBodyProps) => {
   const hasDescription = Boolean(task.description.trim());
   const hasEstimate = Boolean(task.estimate.trim());
+  const stopCardInteraction = (event: React.SyntheticEvent) => {
+    event.stopPropagation();
+  };
 
   return (
     <article
       className={clsx(
         'group rounded-[24px] border border-slate-200/80 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-900/95',
+        listeners && 'cursor-grab active:cursor-grabbing',
         className,
       )}
+      onDoubleClick={() => onEdit(task)}
+      {...attributes}
+      {...listeners}
     >
       <div className="flex items-center justify-between gap-2">
         <span className={clsx('rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase ring-1', priorityStyles[task.priority])}>
@@ -48,6 +55,8 @@ const TaskCardBody = ({ task, onEdit, onDelete, className, attributes, listeners
           <button
             type="button"
             onClick={() => onEdit(task)}
+            onPointerDown={stopCardInteraction}
+            onDoubleClick={stopCardInteraction}
             className="rounded-xl p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-sky-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-sky-300"
             aria-label="Редактировать задачу"
           >
@@ -56,6 +65,8 @@ const TaskCardBody = ({ task, onEdit, onDelete, className, attributes, listeners
           <button
             type="button"
             onClick={() => onDelete(task.id)}
+            onPointerDown={stopCardInteraction}
+            onDoubleClick={stopCardInteraction}
             className="rounded-xl p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-rose-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-rose-300"
             aria-label="Удалить задачу"
           >
@@ -64,18 +75,12 @@ const TaskCardBody = ({ task, onEdit, onDelete, className, attributes, listeners
         </div>
       </div>
 
-      <button
-        type="button"
-        onDoubleClick={() => onEdit(task)}
-        className={clsx('mt-2 block w-full text-left', listeners && 'cursor-grab active:cursor-grabbing')}
-        {...attributes}
-        {...listeners}
-      >
+      <div className="mt-2 w-full text-left">
         <h3 className="text-sm font-semibold text-slate-900 dark:text-white md:text-[15px]">{task.title}</h3>
         {hasDescription && (
           <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-300 md:text-sm">{task.description}</p>
         )}
-      </button>
+      </div>
 
       {task.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">

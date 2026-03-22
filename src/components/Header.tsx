@@ -1,13 +1,11 @@
-import { ArrowLeft, FolderKanban, LogOut, MoonStar, Plus, Search, Settings2, SunMedium } from 'lucide-react';
+import { ArrowLeft, FolderKanban, LogOut, Plus, Search, Settings2 } from 'lucide-react';
 
 interface HeaderProps {
   boardName: string;
   totalTasks: number;
   userEmail: string;
-  theme: 'light' | 'dark';
   onBack: () => void;
   onSignOut: () => void;
-  onToggleTheme: () => void;
   onOpenFilters: () => void;
   onCreateTask: () => void;
   onOpenBoardSettings: () => void;
@@ -17,10 +15,8 @@ export const Header = ({
   boardName,
   totalTasks,
   userEmail,
-  theme,
   onBack,
   onSignOut,
-  onToggleTheme,
   onOpenFilters,
   onCreateTask,
   onOpenBoardSettings,
@@ -50,6 +46,14 @@ export const Header = ({
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
+          onClick={onCreateTask}
+          className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-3.5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400"
+        >
+          <Plus size={16} />
+          Задача
+        </button>
+        <button
+          type="button"
           onClick={onOpenFilters}
           className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-500/40 dark:hover:text-sky-300"
         >
@@ -58,27 +62,11 @@ export const Header = ({
         </button>
         <button
           type="button"
-          onClick={onToggleTheme}
-          className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-slate-700 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-500/40 dark:hover:text-sky-300"
-          aria-label="Переключить тему"
-        >
-          {theme === 'dark' ? <SunMedium size={16} /> : <MoonStar size={16} />}
-        </button>
-        <button
-          type="button"
           onClick={onOpenBoardSettings}
           className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-500/40 dark:hover:text-sky-300"
         >
           <Settings2 size={16} />
           Настройки
-        </button>
-        <button
-          type="button"
-          onClick={onCreateTask}
-          className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-3.5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400"
-        >
-          <Plus size={16} />
-          Задача
         </button>
         <button
           type="button"

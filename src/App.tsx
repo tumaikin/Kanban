@@ -127,10 +127,8 @@ const App = () => {
           boardName={currentBoard.name}
           totalTasks={tasks.length}
           userEmail={auth.user.email ?? 'Без email'}
-          theme={theme}
           onBack={closeBoard}
           onSignOut={auth.signOut}
-          onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           onOpenFilters={() => setIsFilterOpen(true)}
           onCreateTask={() => openCreateModal()}
           onOpenBoardSettings={() => setIsBoardSettingsOpen(true)}
@@ -175,7 +173,9 @@ const App = () => {
       <BoardSettingsModal
         open={isBoardSettingsOpen}
         boardName={currentBoard.name}
+        theme={theme}
         onClose={() => setIsBoardSettingsOpen(false)}
+        onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         onClearAll={() => {
           setIsBoardSettingsOpen(false);
           requestClearAllTasks();
