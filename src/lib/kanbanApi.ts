@@ -25,6 +25,10 @@ interface TaskRow {
   owner_id: string | null;
 }
 
+interface TaskWriteOptions {
+  touchBoard?: boolean;
+}
+
 const ensureSupabase = () => {
   if (!supabase) {
     throw new Error('Supabase не настроен.');
@@ -53,6 +57,36 @@ const mapBoardRow = (row: BoardRow, tasks: Task[]): BoardRecord => ({
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
+
+const mapTaskToRow = (boardId: string, task: Task, position: number) => ({
+  id: task.id,
+  board_id: boardId,
+  title: task.title,
+  description: task.description,
+  priority: task.priority,
+  tags: task.tags,
+  due_date: task.dueDate,
+  estimate: task.estimate,
+  status: task.status,
+  created_at: task.createdAt,
+  updated_at: task.updatedAt,
+  position,
+});
+
+const mapPositionedTaskToRow = (boardId: string, entry: { task: Task; position: number }) =>
+  mapTaskToRow(boardId, entry.task, entry.position);
+
+const touchBoard = async (boardId: string) => {
+  const client = ensureSupabase();
+  const { error } = await client
+    .from('boards')
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', boardId);
+
+  if (error) {
+    throw error;
+  }
+};
 
 export const fetchBoardsWithTasks = async (): Promise<BoardRecord[]> => {
   const client = ensureSupabase();
@@ -104,7 +138,94 @@ export const deleteBoardRecord = async (boardId: string) => {
   }
 };
 
-export const replaceBoardTasks = async (boardId: string, tasks: Task[]) => {
+export const createTaskRecord = async (
+  boardId: string,
+  task: Task,
+  position: number,
+  options: TaskWriteOptions = {},
+) => {
+  const client = ensureSupabase();
+  const { error } = await client.from('tasks').insert(mapTaskToRow(boardId, task, position));
+
+  if (error) {
+    throw error;
+  }
+
+  if (options.touchBoard ?? true) {
+    await touchBoard(boardId);
+  }
+};
+
+export const updateTaskRecord = async (taskId: string, task: Task) => {
+  const client = ensureSupabase();
+  const { data, error } = await client
+    .from('tasks')
+    .update({
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      tags: task.tags,
+      due_date: task.dueDate,
+      estimate: task.estimate,
+      status: task.status,
+      updated_at: task.updatedAt,
+    })
+    .eq('id', taskId)
+    .select('board_id')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  await touchBoard((data as { board_id: string }).board_id);
+};
+
+export const deleteTaskRecord = async (taskId: string, options: TaskWriteOptions = {}) => {
+  const client = ensureSupabase();
+  const { data, error } = await client
+    .from('tasks')
+    .delete()
+    .eq('id', taskId)
+    .select('board_id')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  if (options.touchBoard ?? true) {
+    await touchBoard((data as { board_id: string }).board_id);
+  }
+};
+
+export const upsertTaskEntries = async (
+  boardId: string,
+  entries: Array<{ task: Task; position: number }>,
+  options: TaskWriteOptions = {},
+) => {
+  const client = ensureSupabase();
+
+  if (entries.length === 0) {
+    if (options.touchBoard ?? true) {
+      await touchBoard(boardId);
+    }
+    return;
+  }
+
+  const rows = entries.map((entry) => mapPositionedTaskToRow(boardId, entry));
+  const { error } = await client.from('tasks').upsert(rows, { onConflict: 'id' });
+
+  if (error) {
+    throw error;
+  }
+
+  if (options.touchBoard ?? true) {
+    await touchBoard(boardId);
+  }
+};
+
+export const clearBoardTasks = async (boardId: string) => {
   const client = ensureSupabase();
 
   const { error: deleteError } = await client.from('tasks').delete().eq('board_id', boardId);
@@ -112,45 +233,5 @@ export const replaceBoardTasks = async (boardId: string, tasks: Task[]) => {
     throw deleteError;
   }
 
-  if (tasks.length === 0) {
-    const { error: boardError } = await client
-      .from('boards')
-      .update({ updated_at: new Date().toISOString() })
-      .eq('id', boardId);
-
-    if (boardError) {
-      throw boardError;
-    }
-
-    return;
-  }
-
-  const rows = tasks.map((task, index) => ({
-    id: task.id,
-    board_id: boardId,
-    title: task.title,
-    description: task.description,
-    priority: task.priority,
-    tags: task.tags,
-    due_date: task.dueDate,
-    estimate: task.estimate,
-    status: task.status,
-    created_at: task.createdAt,
-    updated_at: task.updatedAt,
-    position: index,
-  }));
-
-  const { error: insertError } = await client.from('tasks').insert(rows);
-  if (insertError) {
-    throw insertError;
-  }
-
-  const { error: boardError } = await client
-    .from('boards')
-    .update({ updated_at: new Date().toISOString() })
-    .eq('id', boardId);
-
-  if (boardError) {
-    throw boardError;
-  }
+  await touchBoard(boardId);
 };

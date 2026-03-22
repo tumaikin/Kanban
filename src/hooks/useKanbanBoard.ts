@@ -1,6 +1,15 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BoardRecord, FilterState, Task, TaskFormValues, TaskStatus } from '../types/task';
-import { createBoardRecord, deleteBoardRecord, fetchBoardsWithTasks, replaceBoardTasks } from '../lib/kanbanApi';
+import {
+  clearBoardTasks,
+  createBoardRecord,
+  createTaskRecord,
+  deleteBoardRecord,
+  deleteTaskRecord,
+  fetchBoardsWithTasks,
+  upsertTaskEntries,
+  updateTaskRecord,
+} from '../lib/kanbanApi';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { DEFAULT_FILTERS, filterAndSortTasks, getErrorMessage, parseTags, toTaskFormValues } from '../utils/task';
 import { useLocalStorage } from './useLocalStorage';
@@ -15,6 +24,33 @@ const updateBoardTimestamp = (board: BoardRecord): BoardRecord => ({
   ...board,
   updatedAt: new Date().toISOString(),
 });
+
+const getChangedTaskEntries = (previousTasks: Task[], nextTasks: Task[]) => {
+  const previousById = new Map(
+    previousTasks.map((task, index) => [
+      task.id,
+      {
+        task,
+        index,
+      },
+    ]),
+  );
+
+  return nextTasks.reduce<Array<{ task: Task; position: number }>>((entries, task, position) => {
+    const previous = previousById.get(task.id);
+
+    if (
+      !previous ||
+      previous.index !== position ||
+      previous.task.status !== task.status ||
+      previous.task.updatedAt !== task.updatedAt
+    ) {
+      entries.push({ task, position });
+    }
+
+    return entries;
+  }, []);
+};
 
 export const useKanbanBoard = (userId: string | null) => {
   const [boards, setBoards] = useState<BoardRecord[]>([]);
@@ -145,16 +181,6 @@ export const useKanbanBoard = (userId: string | null) => {
     setBoards(data);
   };
 
-  const persistCurrentBoardTasks = async (updater: (tasks: Task[]) => Task[]) => {
-    if (!currentBoard) {
-      return;
-    }
-
-    const nextTasks = updater(currentBoard.tasks);
-    await replaceBoardTasks(currentBoard.id, nextTasks);
-    replaceCurrentBoardTasksLocal(() => nextTasks);
-  };
-
   const openCreateModal = (status?: TaskStatus) => {
     setTaskBeingEdited(
       status
@@ -207,9 +233,10 @@ export const useKanbanBoard = (userId: string | null) => {
           updatedAt: new Date().toISOString(),
         };
 
-        await persistCurrentBoardTasks((currentTasks) =>
+        replaceCurrentBoardTasksLocal((currentTasks) =>
           currentTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)),
         );
+        await updateTaskRecord(updatedTask.id, updatedTask);
       } else {
         const timestamp = new Date().toISOString();
         const nextTask: Task = {
@@ -225,7 +252,10 @@ export const useKanbanBoard = (userId: string | null) => {
           updatedAt: timestamp,
         };
 
-        await persistCurrentBoardTasks((currentTasks) => [nextTask, ...currentTasks]);
+        const previousTasks = currentBoard.tasks;
+        const nextTasks = replaceCurrentBoardTasksLocal((currentTasks) => [nextTask, ...currentTasks]);
+        await createTaskRecord(currentBoard.id, nextTask, 0, { touchBoard: false });
+        await upsertTaskEntries(currentBoard.id, getChangedTaskEntries(previousTasks, nextTasks));
       }
 
       closeModal();
@@ -238,11 +268,22 @@ export const useKanbanBoard = (userId: string | null) => {
   };
 
   const deleteTask = async (taskId: string) => {
+    if (!currentBoard) {
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
 
     try {
-      await persistCurrentBoardTasks((currentTasks) => currentTasks.filter((task) => task.id !== taskId));
+      const previousTasks = currentBoard.tasks;
+      const nextTasks = replaceCurrentBoardTasksLocal((currentTasks) => currentTasks.filter((task) => task.id !== taskId));
+      await deleteTaskRecord(taskId, { touchBoard: false });
+      const changedEntries = getChangedTaskEntries(
+        previousTasks.filter((task) => task.id !== taskId),
+        nextTasks,
+      );
+      await upsertTaskEntries(currentBoard.id, changedEntries);
     } catch (deleteError) {
       setError(getErrorMessage(deleteError, 'Не удалось удалить задачу.'));
       await refreshBoards();
@@ -295,8 +336,9 @@ export const useKanbanBoard = (userId: string | null) => {
     }
 
     try {
+      const previousTasks = currentBoard.tasks;
       replaceCurrentBoardTasksLocal(() => nextTasks);
-      await replaceBoardTasks(currentBoard.id, nextTasks);
+      await upsertTaskEntries(currentBoard.id, getChangedTaskEntries(previousTasks, nextTasks));
     } catch (moveError) {
       setError(getErrorMessage(moveError, 'Не удалось переместить задачу.'));
       await refreshBoards();
@@ -319,7 +361,7 @@ export const useKanbanBoard = (userId: string | null) => {
     setError(null);
 
     try {
-      await replaceBoardTasks(currentBoard.id, []);
+      await clearBoardTasks(currentBoard.id);
       replaceCurrentBoardTasksLocal(() => []);
       setIsConfirmOpen(false);
     } catch (clearError) {
