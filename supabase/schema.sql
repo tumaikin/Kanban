@@ -3,6 +3,12 @@
 create table if not exists public.boards (
   id uuid primary key default gen_random_uuid(),
   name text not null,
+  columns_config jsonb not null default '[
+    {"id":"backlog","title":"Идеи","accent":"from-slate-500 to-slate-400"},
+    {"id":"review","title":"План","accent":"from-amber-500 to-orange-400"},
+    {"id":"in-progress","title":"В работе","accent":"from-sky-500 to-cyan-400"},
+    {"id":"done","title":"Готово","accent":"from-emerald-500 to-teal-400"}
+  ]'::jsonb,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
@@ -23,6 +29,12 @@ create table if not exists public.tasks (
 );
 
 alter table public.boards add column if not exists owner_id uuid default auth.uid();
+alter table public.boards add column if not exists columns_config jsonb not null default '[
+  {"id":"backlog","title":"Идеи","accent":"from-slate-500 to-slate-400"},
+  {"id":"review","title":"План","accent":"from-amber-500 to-orange-400"},
+  {"id":"in-progress","title":"В работе","accent":"from-sky-500 to-cyan-400"},
+  {"id":"done","title":"Готово","accent":"from-emerald-500 to-teal-400"}
+]'::jsonb;
 alter table public.tasks add column if not exists owner_id uuid default auth.uid();
 
 create index if not exists idx_boards_owner_id on public.boards(owner_id);

@@ -1,12 +1,14 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import clsx from 'clsx';
+import type { BoardColumnConfig } from '../types/board';
 import type { TaskFormValues } from '../types/task';
 import { parseTags } from '../utils/task';
 
 interface TaskModalProps {
   open: boolean;
   initialValues: TaskFormValues;
+  columns: BoardColumnConfig[];
   availableTags: string[];
   mode: 'create' | 'edit';
   onClose: () => void;
@@ -14,13 +16,6 @@ interface TaskModalProps {
 }
 
 type ValidationErrors = Partial<Record<keyof TaskFormValues, string>>;
-
-const STATUS_OPTIONS = [
-  { label: 'Идеи', value: 'backlog' },
-  { label: 'План', value: 'review' },
-  { label: 'В работе', value: 'in-progress' },
-  { label: 'Готово', value: 'done' },
-] as const;
 
 const PRIORITY_OPTIONS = [
   { label: 'Низкий', value: 'low' },
@@ -30,7 +25,7 @@ const PRIORITY_OPTIONS = [
 
 const emptyErrors: ValidationErrors = {};
 
-export const TaskModal = ({ open, initialValues, availableTags, mode, onClose, onSubmit }: TaskModalProps) => {
+export const TaskModal = ({ open, initialValues, columns, availableTags, mode, onClose, onSubmit }: TaskModalProps) => {
   const [values, setValues] = useState<TaskFormValues>(initialValues);
   const [errors, setErrors] = useState<ValidationErrors>(emptyErrors);
 
@@ -185,9 +180,9 @@ export const TaskModal = ({ open, initialValues, availableTags, mode, onClose, o
                 onChange={(event) => setValues({ ...values, status: event.target.value as TaskFormValues['status'] })}
                 className={inputClassName('status')}
               >
-                {STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
+                {columns.map((column) => (
+                  <option key={column.id} value={column.id}>
+                    {column.title}
                   </option>
                 ))}
               </select>

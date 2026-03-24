@@ -1,12 +1,9 @@
-﻿import type { TaskStatus, BoardRecord } from './task';
+import type { TaskStatus } from './task';
 
-export interface ColumnDefinition {
+export interface BoardColumnConfig {
   id: TaskStatus;
   title: string;
   accent: string;
 }
 
-export interface BoardCardProps {
-  board: BoardRecord;
-  taskCount: number;
-}
+export type ColumnDefinition = BoardColumnConfig;

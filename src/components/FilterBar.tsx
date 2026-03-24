@@ -1,8 +1,10 @@
-﻿import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
+import type { BoardColumnConfig } from '../types/board';
 import type { FilterState, TaskPriority, TaskStatus } from '../types/task';
 
 interface FilterBarProps {
   open: boolean;
+  columns: BoardColumnConfig[];
   filters: FilterState;
   tags: string[];
   onChange: (next: FilterState) => void;
@@ -17,14 +19,6 @@ const PRIORITY_OPTIONS: Array<{ label: string; value: FilterState['priority'] }>
   { label: 'Низкий', value: 'low' },
 ];
 
-const STATUS_OPTIONS: Array<{ label: string; value: FilterState['status'] }> = [
-  { label: 'Все статусы', value: 'all' },
-  { label: 'Идеи', value: 'backlog' },
-  { label: 'План', value: 'review' },
-  { label: 'В работе', value: 'in-progress' },
-  { label: 'Готово', value: 'done' },
-];
-
 const SORT_OPTIONS: Array<{ label: string; value: FilterState['sortBy'] }> = [
   { label: 'Ручной порядок', value: 'manual' },
   { label: 'Сначала новые', value: 'createdAt' },
@@ -35,10 +29,15 @@ const SORT_OPTIONS: Array<{ label: string; value: FilterState['sortBy'] }> = [
 const selectClassName =
   'rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-sky-500 dark:focus:ring-sky-500/20';
 
-export const FilterBar = ({ open, filters, tags, onChange, onReset, onClose }: FilterBarProps) => {
+export const FilterBar = ({ open, columns, filters, tags, onChange, onReset, onClose }: FilterBarProps) => {
   if (!open) {
     return null;
   }
+
+  const statusOptions: Array<{ label: string; value: FilterState['status'] }> = [
+    { label: 'Все статусы', value: 'all' },
+    ...columns.map((column) => ({ label: column.title, value: column.id })),
+  ];
 
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/50 p-0 backdrop-blur-sm sm:items-center sm:p-4">
@@ -89,7 +88,7 @@ export const FilterBar = ({ open, filters, tags, onChange, onReset, onClose }: F
             onChange={(event) => onChange({ ...filters, status: event.target.value as 'all' | TaskStatus })}
             className={selectClassName}
           >
-            {STATUS_OPTIONS.map((option) => (
+            {statusOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

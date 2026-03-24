@@ -1,9 +1,12 @@
-﻿import type { BoardRecord, Task } from '../types/task';
+import { DEFAULT_BOARD_COLUMNS, normalizeBoardColumns } from '../data/columns';
+import type { BoardColumnConfig } from '../types/board';
+import type { BoardRecord, Task } from '../types/task';
 import { supabase } from './supabase';
 
 interface BoardRow {
   id: string;
   name: string;
+  columns_config: BoardColumnConfig[] | null;
   created_at: string;
   updated_at: string;
   owner_id: string | null;
@@ -53,6 +56,7 @@ const mapTaskRow = (row: TaskRow): Task => ({
 const mapBoardRow = (row: BoardRow, tasks: Task[]): BoardRecord => ({
   id: row.id,
   name: row.name,
+  columns: normalizeBoardColumns(row.columns_config),
   tasks,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
@@ -119,7 +123,38 @@ export const createBoardRecord = async (name: string): Promise<BoardRecord> => {
   const timestamp = new Date().toISOString();
   const { data, error } = await client
     .from('boards')
-    .insert({ name, created_at: timestamp, updated_at: timestamp })
+    .insert({
+      name,
+      columns_config: DEFAULT_BOARD_COLUMNS,
+      created_at: timestamp,
+      updated_at: timestamp,
+    })
+    .select('*')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapBoardRow(data as BoardRow, []);
+};
+
+export const updateBoardRecord = async (
+  boardId: string,
+  updates: {
+    name: string;
+    columns: BoardColumnConfig[];
+  },
+): Promise<BoardRecord> => {
+  const client = ensureSupabase();
+  const { data, error } = await client
+    .from('boards')
+    .update({
+      name: updates.name,
+      columns_config: updates.columns,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', boardId)
     .select('*')
     .single();
 

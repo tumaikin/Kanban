@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import type { BoardColumnConfig } from '../types/board';
 import type { BoardRecord, FilterState, Task, TaskFormValues, TaskStatus } from '../types/task';
 import {
   clearBoardTasks,
@@ -8,6 +9,7 @@ import {
   deleteTaskRecord,
   fetchBoardsWithTasks,
   upsertTaskEntries,
+  updateBoardRecord,
   updateTaskRecord,
 } from '../lib/kanbanApi';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -391,6 +393,58 @@ export const useKanbanBoard = (userId: string | null) => {
     }
   };
 
+  const saveBoardSettings = async (name: string, columns: BoardColumnConfig[]) => {
+    if (!currentBoard) {
+      return;
+    }
+
+    const nextName = name.trim();
+    if (!nextName) {
+      return;
+    }
+
+    const previousBoard = currentBoard;
+
+    setIsSaving(true);
+    setError(null);
+
+    setBoards((current) =>
+      current.map((board) =>
+        board.id === currentBoard.id
+          ? {
+              ...board,
+              name: nextName,
+              columns,
+              updatedAt: new Date().toISOString(),
+            }
+          : board,
+      ),
+    );
+
+    try {
+      const updatedBoard = await updateBoardRecord(currentBoard.id, { name: nextName, columns });
+      setBoards((current) =>
+        current.map((board) =>
+          board.id === currentBoard.id
+            ? {
+                ...updatedBoard,
+                tasks: board.tasks,
+              }
+            : board,
+        ),
+      );
+    } catch (saveError) {
+      setBoards((current) =>
+        current.map((board) => (board.id === previousBoard.id ? previousBoard : board)),
+      );
+      setError(getErrorMessage(saveError, 'Не удалось сохранить настройки доски.'));
+      await refreshBoards();
+      throw saveError;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const openBoard = (boardId: string) => {
     setCurrentBoardId(boardId);
   };
@@ -466,6 +520,7 @@ export const useKanbanBoard = (userId: string | null) => {
     requestClearAllTasks,
     clearAllTasks,
     createBoard,
+    saveBoardSettings,
     openBoard,
     closeBoard,
     requestDeleteBoard,

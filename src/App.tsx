@@ -8,7 +8,6 @@ import { FilterBar } from './components/FilterBar';
 import { Header } from './components/Header';
 import { SupabaseSetup } from './components/SupabaseSetup';
 import { TaskModal } from './components/TaskModal';
-import { BOARD_COLUMNS } from './data/columns';
 import { useAuth } from './hooks/useAuth';
 import { useKanbanBoard } from './hooks/useKanbanBoard';
 import { getUniqueTags } from './utils/task';
@@ -44,6 +43,7 @@ const App = () => {
     requestClearAllTasks,
     clearAllTasks,
     createBoard,
+    saveBoardSettings,
     openBoard,
     closeBoard,
     requestDeleteBoard,
@@ -141,7 +141,7 @@ const App = () => {
         )}
 
         <Board
-          columns={BOARD_COLUMNS}
+          columns={currentBoard.columns}
           allTasksByStatus={allTasksByStatus}
           tasksByStatus={tasksByStatus}
           canReorderTasks={canReorderTasks}
@@ -154,6 +154,7 @@ const App = () => {
 
       <FilterBar
         open={isFilterOpen}
+        columns={currentBoard.columns}
         filters={filters}
         tags={getUniqueTags(tasks)}
         onChange={setFilters}
@@ -164,6 +165,7 @@ const App = () => {
       <TaskModal
         open={isModalOpen}
         initialValues={initialFormValues}
+        columns={currentBoard.columns}
         availableTags={getUniqueTags(tasks)}
         mode={taskBeingEdited?.id ? 'edit' : 'create'}
         onClose={closeModal}
@@ -173,8 +175,13 @@ const App = () => {
       <BoardSettingsModal
         open={isBoardSettingsOpen}
         boardName={currentBoard.name}
+        columns={currentBoard.columns}
         theme={theme}
         onClose={() => setIsBoardSettingsOpen(false)}
+        onSaveSettings={async (name, columns) => {
+          await saveBoardSettings(name, columns);
+          setIsBoardSettingsOpen(false);
+        }}
         onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         onClearAll={() => {
           setIsBoardSettingsOpen(false);

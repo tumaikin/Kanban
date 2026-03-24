@@ -1,4 +1,6 @@
-﻿export type TaskStatus = 'backlog' | 'in-progress' | 'review' | 'done';
+import type { BoardColumnConfig } from './board';
+
+export type TaskStatus = 'backlog' | 'in-progress' | 'review' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high';
 export type SortOption = 'manual' | 'createdAt' | 'dueDate' | 'priority';
 
@@ -36,6 +38,7 @@ export interface FilterState {
 export interface BoardRecord {
   id: string;
   name: string;
+  columns: BoardColumnConfig[];
   tasks: Task[];
   createdAt: string;
   updatedAt: string;
